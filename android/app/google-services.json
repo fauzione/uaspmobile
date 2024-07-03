@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "889172391845",
+    "project_id": "uaspmobil",
+    "storage_bucket": "uaspmobil.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889172391845:android:5a4c19fa6775fc2eb51a4c",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVgn0kIF2xPoVlZAXmNvMHWQYOvwX9SpI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
