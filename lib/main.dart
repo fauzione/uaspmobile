@@ -8,7 +8,7 @@ import 'mahasiswa_login.dart';
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
   runApp(MyApp());
 }
 
@@ -88,9 +88,13 @@ class LoginPage extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 20),
+                    Image.asset(
+                      'aset_media/gambar/logoo.png',
+                      width: 250,
+                      height: 250,
+                    ),
                     const SizedBox(height: 50),
-                    _icon(),
-                    const SizedBox(height: 70),
                     _loginButton(context, 'Admin', AdminLoginPage()),
                     const SizedBox(height: 20),
                     _loginButton(context, 'Mahasiswa', MahasiswaLoginPage()),
@@ -102,17 +106,6 @@ class LoginPage extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _icon() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Color.fromARGB(255, 255, 255, 255), width: 5),
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(Icons.person,
-          color: Color.fromARGB(255, 97, 160, 243), size: 150),
     );
   }
 
