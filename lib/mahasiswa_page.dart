@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:uaspmobile/riwayat_pemesanan_page.dart'; // Import halaman riwayat pemesanan
 
-import 'booking_requests.dart';
 import 'home.dart';
-import 'pengingat.dart';
 
 class MahasiswaPage extends StatelessWidget {
+  final String username;
+
+  MahasiswaPage({required this.username});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +20,7 @@ class MahasiswaPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Selamat datang, Mahasiswa!',
+              'Selamat datang, $username!',
               style: TextStyle(fontSize: 20.0),
             ),
             SizedBox(height: 20.0),
@@ -25,7 +28,9 @@ class MahasiswaPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(
+                          username: username)), // Melewatkan parameter username
                 );
               },
               child: Text('Ingin memesan ruang studi'),
@@ -36,57 +41,14 @@ class MahasiswaPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RiwayatPemesananPage(),
+                    builder: (context) =>
+                        RiwayatPemesananPage(username: username),
                   ),
                 );
               },
               child: Text('Riwayat Pemesanan'),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class RiwayatPemesananPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Riwayat Pemesanan'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: bokingRequests.length,
-          itemBuilder: (context, index) {
-            final boking = bokingRequests[index];
-            return Card(
-              child: ListTile(
-                title: Text('Ruangan: ${boking.ruangan}'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Tanggal: ${boking.tanggal}'),
-                    Text('Waktu: ${boking.waktu}'),
-                    Text('Status: ${boking.status}'),
-                  ],
-                ),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PengingatPage(boking: boking),
-                      ),
-                    );
-                  },
-                  child: Text('Detail'),
-                ),
-              ),
-            );
-          },
         ),
       ),
     );

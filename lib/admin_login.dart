@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'admin_page.dart';
 import 'register_admin.dart';
 
@@ -101,15 +102,29 @@ class _LoginFormState extends State<LoginForm> {
 
   Widget _loginBtn() {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
         String username = _usernameController.text.trim();
         String password = _passwordController.text.trim();
 
         if (username.isNotEmpty && password.isNotEmpty) {
-          if (widget.label == 'Admin') {
+          final QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('admin')
+              .where('username', isEqualTo: username)
+              .where('password', isEqualTo: password)
+              .get();
+
+          if (result.docs.isNotEmpty) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => AdminPage()),
+              MaterialPageRoute(
+                builder: (context) => AdminPage(username: username),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Username atau password salah.'),
+              ),
             );
           }
         } else {

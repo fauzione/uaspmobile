@@ -1,19 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'booking_requests.dart';
-import 'booking_page.dart';
 
 class AdminPage extends StatefulWidget {
+  final String username;
+
+  AdminPage({required this.username});
+
   @override
   _AdminPageState createState() => _AdminPageState();
 }
 
 class _AdminPageState extends State<AdminPage> {
-  void _updateBokingStatus(int index, String status) {
-    setState(() {
-      bokingRequests[index].status = status;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,40 +22,59 @@ class _AdminPageState extends State<AdminPage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Selamat datang, Admin',
+              'Selamat datang, ${widget.username}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: bokingRequests.length,
-              itemBuilder: (context, index) {
-                final boking = bokingRequests[index];
-                return Card(
-                  child: ListTile(
-                    title: Text('Ruangan: ${boking.ruangan}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Tanggal: ${boking.tanggal}'),
-                        Text('Waktu: ${boking.waktu}'),
-                        Text('Status: ${boking.status}'),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.check, color: Colors.green),
-                          onPressed: () => _updateBokingStatus(index, 'Disetujui'),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('pemesanan')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                List<DocumentSnapshot> bookings = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: bookings.length,
+                  itemBuilder: (context, index) {
+                    var booking = bookings[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text('Ruangan: ${booking['ruangan']}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Tanggal: ${booking['tanggal']}'),
+                            Text('Waktu: ${booking['waktu']}'),
+                            Text('Status: ${booking['status']}'),
+                          ],
                         ),
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.red),
-                          onPressed: () => _updateBokingStatus(index, 'Penuh'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.check, color: Colors.green),
+                              onPressed: () =>
+                                  _updateBookingStatus(booking.id, 'Disetujui'),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close, color: Colors.red),
+                              onPressed: () =>
+                                  _updateBookingStatus(booking.id, 'Ditolak'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -66,5 +82,19 @@ class _AdminPageState extends State<AdminPage> {
         ],
       ),
     );
+  }
+
+  void _updateBookingStatus(String documentId, String newStatus) {
+    FirebaseFirestore.instance.collection('pemesanan').doc(documentId).update({
+      'status': newStatus,
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Status pemesanan diperbarui: $newStatus')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memperbarui status pemesanan: $error')),
+      );
+    });
   }
 }

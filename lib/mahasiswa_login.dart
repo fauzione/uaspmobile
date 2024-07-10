@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'mahasiswa_page.dart';
-import 'register_mahasiswa.dart';
+import 'package:uaspmobile/register_mahasiswa.dart';
+
+import 'mahasiswa_page.dart'; // Sesuaikan dengan nama file dan path yang sesuai
+
 class MahasiswaLoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,14 +24,15 @@ class LoginPageTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-        begin: Alignment.topRight,
-        end: Alignment.bottomLeft,
-        colors: [
-          Colors.blue,
-          Colors.red,
-        ],
-      )),
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.red,
+          ],
+        ),
+      ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -67,7 +71,8 @@ class _LoginFormState extends State<LoginForm> {
       children: [
         _inputField('${widget.label} Username', _usernameController),
         const SizedBox(height: 20),
-        _inputField('${widget.label} Password', _passwordController, isPassword: true),
+        _inputField('${widget.label} Password', _passwordController,
+            isPassword: true),
         const SizedBox(height: 50),
         _loginBtn(),
         const SizedBox(height: 20),
@@ -76,10 +81,12 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _inputField(String hintText, TextEditingController controller, {bool isPassword = false}) {
+  Widget _inputField(String hintText, TextEditingController controller,
+      {bool isPassword = false}) {
     var border = OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Colors.white));
+      borderRadius: BorderRadius.circular(18),
+      borderSide: const BorderSide(color: Colors.white),
+    );
 
     return TextField(
       style: const TextStyle(color: Colors.white),
@@ -100,15 +107,29 @@ class _LoginFormState extends State<LoginForm> {
 
   Widget _loginBtn() {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
         String username = _usernameController.text.trim();
         String password = _passwordController.text.trim();
 
         if (username.isNotEmpty && password.isNotEmpty) {
-          if (widget.label == 'Mahasiswa') {
+          final QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('mahasiswa')
+              .where('username', isEqualTo: username)
+              .where('password', isEqualTo: password)
+              .get();
+
+          if (result.docs.isNotEmpty) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => MahasiswaPage()),
+              MaterialPageRoute(
+                builder: (context) => MahasiswaPage(username: username),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Username atau password salah.'),
+              ),
             );
           }
         } else {

@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'booking_page.dart';
-import 'booking_requests.dart';
 
 class HomePage extends StatefulWidget {
+  final String username;
+
+  HomePage({required this.username});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -75,7 +78,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text('Tanggal Pemesanan: ${_dateController.text}'),
               Text('Waktu Pemesanan: ${_timeController.text}'),
-              Text('Ruangan yang Dipilih: $_selectedRoom - ${_roomOptions[_selectedRoom!]}'),
+              Text(
+                  'Ruangan yang Dipilih: $_selectedRoom - ${_roomOptions[_selectedRoom!]}'),
               Text('Status Pemesanan: Menunggu persetujuan admin'),
             ],
           ),
@@ -83,8 +87,8 @@ class _HomePageState extends State<HomePage> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                _addBokingRequest();
-                
+                _addBookingRequest(widget.username);
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Pemesanan berhasil diajukan!')),
                 );
@@ -97,15 +101,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _addBokingRequest() {
-    final newRequest = BokingRequest(
-      tanggal: _dateController.text,
-      waktu: _timeController.text,
-      ruangan: _selectedRoom!,
-    );
-    setState(() {
-      bokingRequests.add(newRequest);
-    });
+  void _addBookingRequest(String username) {
+    final newRequest = {
+      'tanggal': _dateController.text,
+      'waktu': _timeController.text,
+      'ruangan': _selectedRoom!,
+      'status': 'Menunggu persetujuan admin',
+      'user': username,
+    };
+
+    FirebaseFirestore.instance.collection('pemesanan').add(newRequest);
   }
 
   @override
