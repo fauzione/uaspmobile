@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'booking_page.dart';
+import 'package:uaspmobile/riwayat_pemesanan_page.dart';
 
 class PengingatPage extends StatelessWidget {
-  final BokingRequest boking;
+  final BookingRequest boking;
+
   static const Map<String, String> roomLocations = {
     'Ruangan R 1': 'Lantai 2',
     'Ruangan R 2': 'Lantai 2',

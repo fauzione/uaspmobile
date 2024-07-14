@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:uaspmobile/pengingat.dart'; // Import halaman pengingat
+
+import 'pengingat.dart'; // Import halaman pengingat
 
 class RiwayatPemesananPage extends StatelessWidget {
   final String username;
@@ -27,7 +28,8 @@ class RiwayatPemesananPage extends StatelessWidget {
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-                child: Text('Tidak ada data pemesanan yang ditampilkan.'));
+              child: Text('Tidak ada data pemesanan yang ditampilkan.'),
+            );
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
@@ -55,8 +57,7 @@ class RiwayatPemesananPage extends StatelessWidget {
                               waktu: doc['waktu'],
                               ruangan: doc['ruangan'],
                               status: doc['status'],
-                              user:
-                                  doc['user'], // Mengambil user dari Firestore
+                              user: doc['user'],
                             ),
                           ),
                         ),
@@ -74,9 +75,18 @@ class RiwayatPemesananPage extends StatelessWidget {
   }
 }
 
-BookingRequest(
-    {required tanggal,
-    required waktu,
-    required ruangan,
-    required status,
-    required user}) {}
+class BookingRequest {
+  final String tanggal;
+  final String waktu;
+  final String ruangan;
+  final String status;
+  final String user;
+
+  BookingRequest({
+    required this.tanggal,
+    required this.waktu,
+    required this.ruangan,
+    required this.status,
+    required this.user,
+  });
+}
