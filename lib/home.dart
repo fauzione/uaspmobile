@@ -118,66 +118,120 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _dateController,
-              readOnly: true,
-              onTap: () => _selectDate(context),
-              decoration: InputDecoration(
-                labelText: 'Tanggal Pemesanan',
-                prefixIcon: Icon(Icons.calendar_today),
-              ),
+      body: Container(
+        constraints:
+            BoxConstraints.expand(), // Mengisi seluruh ruang yang tersedia
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade300, Colors.red.shade300],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text(
+                    'Pesan Ruang Studi',
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30.0),
+                TextField(
+                  controller: _dateController,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  decoration: InputDecoration(
+                    labelText: 'Tanggal Pemesanan',
+                    prefixIcon: Icon(Icons.calendar_today),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                TextField(
+                  controller: _timeController,
+                  readOnly: true,
+                  onTap: () => _selectTime(context),
+                  decoration: InputDecoration(
+                    labelText: 'Waktu Pemesanan',
+                    prefixIcon: Icon(Icons.access_time),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                DropdownButtonFormField<String>(
+                  value: _selectedRoom,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedRoom = newValue;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Pilih Ruangan',
+                    prefixIcon: Icon(Icons.room),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  items: _roomOptions.keys.map((room) {
+                    return DropdownMenuItem<String>(
+                      value: room,
+                      child: Text('$room - ${_roomOptions[room]}'),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 30.0),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.deepPurple,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      textStyle: TextStyle(fontSize: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_dateController.text.isNotEmpty &&
+                          _timeController.text.isNotEmpty &&
+                          _selectedRoom != null) {
+                        _showConfirmationDialog(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Harap lengkapi semua input!')),
+                        );
+                      }
+                    },
+                    child: Text('Pesan'),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 20.0),
-            TextField(
-              controller: _timeController,
-              readOnly: true,
-              onTap: () => _selectTime(context),
-              decoration: InputDecoration(
-                labelText: 'Waktu Pemesanan',
-                prefixIcon: Icon(Icons.access_time),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            DropdownButtonFormField<String>(
-              value: _selectedRoom,
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedRoom = newValue;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Pilih Ruangan',
-                prefixIcon: Icon(Icons.room),
-              ),
-              items: _roomOptions.keys.map((room) {
-                return DropdownMenuItem<String>(
-                  value: room,
-                  child: Text('$room - ${_roomOptions[room]}'),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                if (_dateController.text.isNotEmpty &&
-                    _timeController.text.isNotEmpty &&
-                    _selectedRoom != null) {
-                  _showConfirmationDialog(context);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Harap lengkapi semua input!')),
-                  );
-                }
-              },
-              child: Text('Pesan'),
-            ),
-          ],
+          ),
         ),
       ),
     );
